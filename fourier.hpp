@@ -15,7 +15,7 @@ namespace fourierpp {
     static constexpr double pi {3.1415926535897932384626433832795};
 
     template <class signal_vector>
-    void cout_signal_vector(signal_vector& data, std::string msg)
+    void cout_signal_vector(std::string msg, signal_vector& data)
     {
         std::cout << msg
                   << std::endl; 
