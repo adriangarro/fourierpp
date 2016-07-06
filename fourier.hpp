@@ -6,6 +6,9 @@
     (c) E. Adrian Garro S. Costa Rica Institute of Technology.
  */
 
+#ifndef FOURIER_HPP
+#define FOURIER_HPP
+
 #include <cmath>
 #include <vector>
 #include <complex>
@@ -130,3 +133,4 @@ namespace fourierpp {
         return result;
     }
 }
+#endif

@@ -348,7 +348,6 @@ class Fourier_analyzer {
                     cout << "Ingrese una opción válida del menu."
                          << endl;
                     start();
-                    break;
               }
         }
 };
