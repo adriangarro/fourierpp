@@ -1,13 +1,13 @@
-/* 
-    Test Discrete Fourier Transform algorithms with 
-    random sine wave points as sample.
-    
-    Built with C++14
-    
-    (c) E. Adrian Garro S. Costa Rica Institute of Technology.
- */
-
-// clang++ fourier_analyzer.cpp -std=c++1z -stdlib=libc++
+//
+//  main.cpp
+//  Fourierpp
+//
+//  Test Discrete Fourier Transform algorithms
+//  with random sine wave points as sample.
+//
+//  Created by Elberth Adrián Garro Sánchez on 30/3/16.
+//  Copyright © 2016 Elberth Adrián Garro Sánchez. All rights reserved.
+//
 
 #include <cmath>
 #include <limits>
@@ -38,24 +38,24 @@ class Fourier_analyzer {
         vector<string> averages_info;
         vector<string> variances_info;
         
-        void validate_menu_choice() 
+        void validate_menu_choice()
         {
             while (cin.fail()) {
                 cin.clear();
                 cin.ignore(numeric_limits<int>::max(), '\n');
-                cout << "Entrada erronea, por favor intente de nuevo: ";
+                cout << "Input error, please try again: ";
                 cin >> menu_choice;
                 cout << endl;
             }
         }
         
-        void set_sample_sizes() 
+        void set_sample_sizes()
         {
             sample_sizes = {128, 256, 512, 1024, 2048, 4096, 8192};
         }
         
-        void signal_sample(double sampling_freq, double amp1, 
-                           double freq1, double amp2, double freq2)        
+        void signal_sample(double sampling_freq, double amp1,
+                           double freq1, double amp2, double freq2)
         {
             // create the points to sample in (0, 1) single period
             double time_interval = 1.0 / sampling_freq;
@@ -79,7 +79,7 @@ class Fourier_analyzer {
             return uniform_int_distribution<int>{min, max}(rd);
         }
         
-        void set_data(double sample_freq) 
+        void set_data(double sample_freq)
         {
             // random signal amplitudes greater than one
             auto amp1 = rand_int(1, numeric_limits<int>::max());
@@ -92,32 +92,32 @@ class Fourier_analyzer {
         }
         
         void verify_sdft_idft()
-            // check dft with idft 
+            // check dft with idft
         {
-            cout << "\nVerificación de DFT y IDFT\n";
+            cout << "\nVerification of DFT and IDFT\n";
             // create signal of 8 points on data
             set_data(8);
-            cout_signal_vector("Señal aleatoria:", data);
+            cout_signal_vector("Random signal:", data);
             result = sdft(data);
-            cout_signal_vector("Transformada discreta de Fourier:", result);
+            cout_signal_vector("Discrete Fourier Transform:", result);
             data = result;
             result = idft(data);
-            cout_signal_vector("Transformada inversa discreta de Fourier:", result);
+            cout_signal_vector("Inverse Discrete Fourier Transform:", result);
             data.clear();
         }
         
         void verify_fft_idft()
             // check fft with idft
         {
-            cout << "\nVerificación de FFT y IDFT\n";
+            cout << "\nVerification of FFT and IDFT\n";
             // create signal of 8 points on data
             set_data(8);
-            cout_signal_vector("Señal aleatoria:", data);
+            cout_signal_vector("Random signal:", data);
             result = fft(data);
-            cout_signal_vector("Transformada discreta de Fourier:", result);
+            cout_signal_vector("Discrete Fourier Transform:", result);
             data = result;
             result = idft(data);
-            cout_signal_vector("Transformada inversa discreta de Fourier:", result);
+            cout_signal_vector("Inverse Discrete Fourier Transform:", result);
             data.clear();
         }
         
@@ -129,17 +129,18 @@ class Fourier_analyzer {
             log_file.close();
         }
         
-        // measure dft algorithm's time by its name
+    
         double measure_time(string algorithm_name)
+            // measure dft algorithm's time by its name
         {
             chrono::high_resolution_clock::time_point time1;
             chrono::high_resolution_clock::time_point time2;
             // measure simple discrete fourier fransform algorithm
             if (algorithm_name == "sdft") {
                 time1 = chrono::high_resolution_clock::now();
-                result = sdft(data);  
+                result = sdft(data);
                 time2 = chrono::high_resolution_clock::now();
-            } 
+            }
             // measure fast fourier fransform algorithm
             else if (algorithm_name == "fft") {
                 time1 = chrono::high_resolution_clock::now();
@@ -149,7 +150,7 @@ class Fourier_analyzer {
             return chrono::duration_cast<chrono::milliseconds>(time2-time1).count();
         }
         
-        void set_average_runtime() 
+        void set_average_runtime()
         {
             // compute unbiased average
             // E(X) = (sum from 1 to N of x) / N
@@ -157,39 +158,39 @@ class Fourier_analyzer {
             average_runtime /= runtimes.size();
         }
         
-        void save_average_info(size_t sample_size) 
+        void save_average_info(size_t sample_size)
         {
-            string average_info = string("Promedio de el tiempo ") 
-                                + string("de ejecución con ")
-                                + string("una muestra de ") 
-                                + to_string(sample_size)
-                                + string(" puntos: ") 
-                                + to_string(int(average_runtime)) 
-                                + string(" milisegundos.");
+            string average_info = string("Average of execution ")
+                + string("time with ")
+                + string("a sample of ")
+                + to_string(sample_size)
+                + string(" points: ")
+                + to_string(int(average_runtime))
+                + string(" miliseconds.");
             averages_info.push_back(average_info);
         }
         
-        void set_variance_runtime() 
+        void set_variance_runtime()
         {
             // clear variance
             variance_runtime = 0.0;
             // compute unbiased variance
-            // var(X) = [sum from 1 to N of (x - E(X))^2] / N-1
+            // var(X) = [ sum from 1 to N of (x - E(X))^2 ] / N-1
             for (auto& runtime : runtimes) {
-                variance_runtime += pow(runtime - average_runtime, 2); 
+                variance_runtime += pow(runtime - average_runtime, 2);
             }
             variance_runtime /= runtimes.size() - 1;
         }
         
-        void save_variance_info(size_t sample_size) 
+        void save_variance_info(size_t sample_size)
         {
-            string variance_info = string("Varianza de el tiempo ") 
-                                 + string("de ejecución con ")
-                                 + string("una muestra de ") 
-                                 + to_string(sample_size)
-                                 + string(" puntos: ") 
-                                 + to_string(int(variance_runtime)) 
-                                 + string(" milisegundos.");
+            string variance_info = string("Variance of execution ")
+                + string("time with ")
+                + string("a sample of ")
+                + to_string(sample_size)
+                + string(" points: ")
+                + to_string(int(variance_runtime))
+                + string(" miliseconds.");
             variances_info.push_back(variance_info);
         }
         
@@ -203,12 +204,12 @@ class Fourier_analyzer {
                 set_data(sample_size);
                 //-----------------------------------------------------------------
                 // create current experiment info
-                string current_experiment_info = string("Experimento número ")
-                                               + to_string(experiment_num)
-                                               + string(" con una muestra de ")
-                                               + to_string(int(sample_size)) 
-                                               + string(" puntos. ");
-                // record current experiment info                            
+                string current_experiment_info = string("Experiment number ")
+                    + to_string(experiment_num)
+                    + string(" with a sample of ")
+                    + to_string(int(sample_size))
+                    + string(" points. ");
+                // record current experiment info
                 save_log(algorithm_name, current_experiment_info);
                 cout << current_experiment_info;
                 //-----------------------------------------------------------------
@@ -217,9 +218,9 @@ class Fourier_analyzer {
                 // save runtime
                 runtimes.push_back(algorithm_runtime);
                 // create algorithm runtime info
-                string algorithm_runtime_info = string("Tiempo de ejecución: ")
-                                              + to_string(int(algorithm_runtime)) 
-                                              + string(" milisegundos.");
+                string algorithm_runtime_info = string("Execution time: ")
+                    + to_string(int(algorithm_runtime))
+                    + string(" miliseconds.");
                 // record algorithm runtime info
                 save_log(algorithm_name, algorithm_runtime_info);
                 cout << algorithm_runtime_info
@@ -251,9 +252,9 @@ class Fourier_analyzer {
             set_sample_sizes();
             //-----------------------------------------------------------------
             // create initial algorithm test info
-            string initial_msg = "Nombre del algoritmo: " 
-                               + algorithm_name 
-                               + "\nIniciando pruebas...";
+            string initial_msg = "Algorithm's name: "
+                + algorithm_name
+                + "\nStarting tests...";
             // save initial algorithm test info
             save_log(algorithm_name, initial_msg);
             cout << initial_msg
@@ -270,7 +271,7 @@ class Fourier_analyzer {
                 cout << endl;
             }
             //-----------------------------------------------------------------
-            // save final average results 
+            // save final average results
             for (auto average : averages_info) {
                 save_log(algorithm_name, average);
                 cout << average
@@ -289,66 +290,67 @@ class Fourier_analyzer {
             }
             //-----------------------------------------------------------------
             // separate info
-            cout << endl; 
+            cout << endl;
             //-----------------------------------------------------------------
             // end process
-            cout << "Análisis efectudado. El archivo log ha sido creado.\n";
+            cout << "Analysis done. The log file has been created.\n";
             averages_info.clear();
             variances_info.clear();
             //-----------------------------------------------------------------
         }
-        
+    
     public:
         Fourier_analyzer() = default;
         
         void start()
         {
             cout << endl
-                 << "---------------------(Menú)------------------------"
-                 << endl
-                 << "--------------Análisis de Algoritmos---------------"
-                 << endl
-                 << endl
-                 << "            1) Verificación: DFT y IDFT"
-                 << endl
-                 << "            2) Verificación: FFT y IDFT"
-                 << endl
-                 << "            3) Prueba de rendimiento: Simple DTF"
-                 << endl
-                 << "            4) Prueba de rendimiento: FFT"
-                 << endl
-                 << "            0) Salir"
-                 << endl
-                 << "---------------------------------------------------"
-                 << endl
-                 << "Opción: ";
-             cin >> menu_choice;
-             validate_menu_choice();
-             switch (menu_choice) {
-                  case 1:
-                    verify_sdft_idft(); 
+            << "---------------------(Menu)------------------------"
+            << endl
+            << "--------------Algorithm's Analysis---------------"
+            << endl
+            << endl
+            << "            1) Verification: DFT - IDFT"
+            << endl
+            << "            2) Verification: FFT - IDFT"
+            << endl
+            << "            3) Perfomance test: Simple DTF"
+            << endl
+            << "            4) Perfomance test: FFT"
+            << endl
+            << "            0) End"
+            << endl
+            << "---------------------------------------------------"
+            << endl
+            << "Option: ";
+            cin >> menu_choice;
+            validate_menu_choice();
+            switch (menu_choice) {
+                case 1:
+                    verify_sdft_idft();
                     start();
                     break;
-                  case 2:
-                    verify_fft_idft(); 
+                case 2:
+                    verify_fft_idft();
                     start();
                     break;
-                  case 3:
+                case 3:
                     fourier_test("sdft");
                     start();
                     break;
-                  case 4:
+                case 4:
                     fourier_test("fft");
                     start();
                     break;
-                  case 0:
-                    cout << "Gracias por utilizar este programa.";
+                case 0:
+                    cout << "Thank you for your time :)"
+                         << endl;
                     break;
-                  default:
-                    cout << "Ingrese una opción válida del menu."
+                default:
+                    cout << "Pick a valid option from menu."
                          << endl;
                     start();
-              }
+            }
         }
 };
 
@@ -356,7 +358,7 @@ Fourier_analyzer get_analyzer()
 {
     return Fourier_analyzer{};
 }
- 
+
 int main()
 {
     auto analyzer = get_analyzer();
